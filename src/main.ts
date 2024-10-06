@@ -18,6 +18,6 @@ const counterDiv = document.getElementById("counter") as HTMLDivElement;
 let counter: number = 0;
 
 button.addEventListener("click", () => {
-    counter++;
-    counterDiv.innerHTML = `Grafts made: ${counter}`;
+  counter++;
+  counterDiv.innerHTML = `Grafts made: ${counter}`;
 });
