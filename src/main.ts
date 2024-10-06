@@ -17,17 +17,26 @@ const counterDiv = document.getElementById("counter") as HTMLDivElement;
 
 let counter: number = 0;
 
+// Time management variables
+let lastTimestamp: number = 0;
+const incrementsPerSecond: number = 1;
+
+function updateCounter(timestamp: number) {
+  if (lastTimestamp !== 0) {
+    const delta = timestamp - lastTimestamp;
+    const incrementAmount = (delta / 1000) * incrementsPerSecond;
+    counter += incrementAmount;
+    counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
+  }
+  lastTimestamp = timestamp;
+  requestAnimationFrame(updateCounter);
+}
+
+// Start the animation loop
+requestAnimationFrame(updateCounter);
+
 // Increment counter every time the user clicks the button
 button.addEventListener("click", () => {
-  incrementCounter();
-});
-
-// Increment counter every second using setInterval
-setInterval(() => {
-  incrementCounter();
-}, 1000);
-
-function incrementCounter() {
   counter++;
-  counterDiv.innerHTML = `Grafts made: ${counter}`;
-}
+  counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
+});
