@@ -12,5 +12,3 @@ header.innerHTML = gameName;
 button.innerHTML = buttonName;
 app.append(header);
 app.append(button);
-
-
