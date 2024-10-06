@@ -19,15 +19,15 @@ let counter: number = 0;
 
 // Increment counter every time the user clicks the button
 button.addEventListener("click", () => {
-    incrementCounter();
-  });
-  
-  // Increment counter every second using setInterval
-  setInterval(() => {
-    incrementCounter();
-  }, 1000);
-  
-  function incrementCounter() {
-    counter++;
-    counterDiv.innerHTML = `Grafts made: ${counter}`;
-  }
+  incrementCounter();
+});
+
+// Increment counter every second using setInterval
+setInterval(() => {
+  incrementCounter();
+}, 1000);
+
+function incrementCounter() {
+  counter++;
+  counterDiv.innerHTML = `Grafts made: ${counter}`;
+}
