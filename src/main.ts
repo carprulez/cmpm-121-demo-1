@@ -3,28 +3,68 @@ import "./style.css";
 const app: HTMLDivElement = document.querySelector("#app")!;
 
 const gameName = "Leaf Lovers";
-const buttonName = "🌳";
-const upgradeButtonName = "🌱 Purchase Upgrade";
 document.title = gameName;
 
 const header = document.createElement("h1");
-const button = document.createElement("button");
-const upgradeButton = document.createElement("button");
 header.innerHTML = gameName;
-button.innerHTML = buttonName;
-upgradeButton.innerHTML = upgradeButtonName;
-
-// Initial setup: disable upgrade button
-upgradeButton.disabled = true;
-
 app.append(header);
-app.append(button);
-app.append(upgradeButton);
 
 const counterDiv = document.getElementById("counter") as HTMLDivElement;
 
+// Create a new div for displaying the status
+const statusDiv = document.createElement("div");
+const growthRateDisplay = document.createElement("p");
+const purchasesDisplay = document.createElement("p");
+statusDiv.appendChild(growthRateDisplay);
+statusDiv.appendChild(purchasesDisplay);
+app.append(statusDiv);
+
 let counter: number = 0;
 let growthRate: number = 0;
+
+// Basic button for manual count increment
+const manualButton = document.createElement("button");
+manualButton.innerHTML = "🌳";
+manualButton.addEventListener("click", () => {
+  counter++;
+  counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
+});
+app.append(manualButton);
+
+// Upgrade definitions
+const upgrades = [
+  { id: "a", name: "Item A", cost: 10, rateIncrease: 0.1, button: null as HTMLButtonElement | null, count: 0 },
+  { id: "b", name: "Item B", cost: 100, rateIncrease: 2.0, button: null as HTMLButtonElement | null, count: 0 },
+  { id: "c", name: "Item C", cost: 1000, rateIncrease: 50, button: null as HTMLButtonElement | null, count: 0 },
+];
+
+// Create a purchase button for each upgrade
+upgrades.forEach((upgrade) => {
+  const button = document.createElement("button");
+  button.innerHTML = `${upgrade.name} - Cost: ${upgrade.cost}`;
+  button.disabled = true;
+
+  button.addEventListener("click", () => {
+    if (counter >= upgrade.cost) {
+      counter -= upgrade.cost;
+      growthRate += upgrade.rateIncrease;
+      upgrade.count += 1;  // Increment the count of purchased items
+      updateStatus();  // Update status display
+      button.disabled = true;  // Immediately disable until further checks
+    }
+  });
+
+  app.append(button);
+
+  // Save button reference and ensure TypeScript knows about it
+  upgrade.button = button;
+});
+
+// Update status display
+function updateStatus() {
+  growthRateDisplay.innerHTML = `Current Growth Rate: ${growthRate.toFixed(1)} grafts/sec`;
+  purchasesDisplay.innerHTML = 'Purchased Items: ' + upgrades.map(upgrade => `${upgrade.name}: ${upgrade.count}`).join(', ');
+}
 
 // Time management variables
 let lastTimestamp: number = 0;
@@ -36,26 +76,19 @@ function updateCounter(timestamp: number) {
     counter += incrementAmount;
     counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
 
-    // Check if purchase is affordable
-    upgradeButton.disabled = counter < 10;
+    // Enable buttons where sufficient units exist
+    upgrades.forEach(upgrade => {
+      if (upgrade.button) {
+        upgrade.button.disabled = counter < upgrade.cost;
+      }
+    });
   }
   lastTimestamp = timestamp;
   requestAnimationFrame(updateCounter);
 }
 
-// Increment counter whenever the button is clicked
-button.addEventListener("click", () => {
-  counter++;
-  counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
-});
-
-// Purchase upgrade logic
-upgradeButton.addEventListener("click", () => {
-  if (counter >= 10) {
-    counter -= 10;
-    growthRate += 1; // Increase the growth rate
-  }
-});
-
-// Start animation loop
+// Start the animation loop
 requestAnimationFrame(updateCounter);
+
+// Initialize status display
+updateStatus();
