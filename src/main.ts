@@ -33,9 +33,30 @@ app.append(manualButton);
 
 // Upgrade definitions
 const upgrades = [
-  { id: "a", name: "Item A", cost: 10, rateIncrease: 0.1, button: null as HTMLButtonElement | null, count: 0 },
-  { id: "b", name: "Item B", cost: 100, rateIncrease: 2.0, button: null as HTMLButtonElement | null, count: 0 },
-  { id: "c", name: "Item C", cost: 1000, rateIncrease: 50, button: null as HTMLButtonElement | null, count: 0 },
+  {
+    id: "a",
+    name: "Item A",
+    cost: 10,
+    rateIncrease: 0.1,
+    button: null as HTMLButtonElement | null,
+    count: 0,
+  },
+  {
+    id: "b",
+    name: "Item B",
+    cost: 100,
+    rateIncrease: 2.0,
+    button: null as HTMLButtonElement | null,
+    count: 0,
+  },
+  {
+    id: "c",
+    name: "Item C",
+    cost: 1000,
+    rateIncrease: 50,
+    button: null as HTMLButtonElement | null,
+    count: 0,
+  },
 ];
 
 // Create a purchase button for each upgrade
@@ -48,9 +69,9 @@ upgrades.forEach((upgrade) => {
     if (counter >= upgrade.cost) {
       counter -= upgrade.cost;
       growthRate += upgrade.rateIncrease;
-      upgrade.count += 1;  // Increment the count of purchased items
-      updateStatus();  // Update status display
-      button.disabled = true;  // Immediately disable until further checks
+      upgrade.count += 1; // Increment the count of purchased items
+      updateStatus(); // Update status display
+      button.disabled = true; // Immediately disable until further checks
     }
   });
 
@@ -63,7 +84,9 @@ upgrades.forEach((upgrade) => {
 // Update status display
 function updateStatus() {
   growthRateDisplay.innerHTML = `Current Growth Rate: ${growthRate.toFixed(1)} grafts/sec`;
-  purchasesDisplay.innerHTML = 'Purchased Items: ' + upgrades.map(upgrade => `${upgrade.name}: ${upgrade.count}`).join(', ');
+  purchasesDisplay.innerHTML =
+    "Purchased Items: " +
+    upgrades.map((upgrade) => `${upgrade.name}: ${upgrade.count}`).join(", ");
 }
 
 // Time management variables
@@ -77,7 +100,7 @@ function updateCounter(timestamp: number) {
     counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
 
     // Enable buttons where sufficient units exist
-    upgrades.forEach(upgrade => {
+    upgrades.forEach((upgrade) => {
       if (upgrade.button) {
         upgrade.button.disabled = counter < upgrade.cost;
       }
