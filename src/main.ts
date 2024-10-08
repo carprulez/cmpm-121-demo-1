@@ -1,5 +1,17 @@
 import "./style.css";
 
+interface Item {
+  name: string,
+  cost: number,
+  rate: number
+};
+
+const availableItems: Item[] = [
+  { name: "Improved Irrigation", cost: 10, rate: 0.1 },
+  { name: "Soil", cost: 100, rate: 2 },
+  { name: "Organic Fertilizer", cost: 1000, rate: 50 },
+];
+
 const app: HTMLDivElement = document.querySelector("#app")!;
 
 const gameName = "Leaf Lovers";
@@ -32,48 +44,35 @@ manualButton.addEventListener("click", () => {
 });
 app.append(manualButton);
 
-// Upgrade definitions
-const upgrades = [
-  {
-    id: "a",
-    name: "Improved Irrigation",
-    baseCost: 10,
-    rateIncrease: 0.1,
-    button: null as HTMLButtonElement | null,
-    count: 0,
-  },
-  {
-    id: "b",
-    name: "Soil",
-    baseCost: 100,
-    rateIncrease: 2.0,
-    button: null as HTMLButtonElement | null,
-    count: 0,
-  },
-  {
-    id: "c",
-    name: "Organic Fertilizer",
-    baseCost: 1000,
-    rateIncrease: 50,
-    button: null as HTMLButtonElement | null,
-    count: 0,
-  },
-];
+type Upgrade = Item & {
+  baseCost: number;
+  currentCost: number;
+  button: HTMLButtonElement | null;
+  count: number;
+};
+
+// Upgrade logic using availableItems and restructuring it to include dynamic properties
+const upgrades: Upgrade[] = availableItems.map(item => ({
+  ...item,
+  baseCost: item.cost,  // Maintain a separate baseCost reference
+  currentCost: item.cost,
+  button: null,
+  count: 0,
+}));
 
 // Create a purchase button for each upgrade
 upgrades.forEach((upgrade) => {
   const button = document.createElement("button");
-  button.innerHTML = `${upgrade.name} - Cost: ${upgrade.baseCost.toFixed(2)}`;
+  button.innerHTML = `${upgrade.name} - Cost: ${upgrade.currentCost.toFixed(2)}`;
   button.disabled = true;
 
   button.addEventListener("click", () => {
-    const currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count);
-
-    if (counter >= currentCost) {
-      counter -= currentCost;
-      growthRate += upgrade.rateIncrease;
+    if (counter >= upgrade.currentCost) {
+      counter -= upgrade.currentCost;
+      growthRate += upgrade.rate;
       upgrade.count += 1; // Increment the count of purchased items
-      button.innerHTML = `${upgrade.name} - Cost: ${(upgrade.baseCost * Math.pow(1.15, upgrade.count)).toFixed(2)}`; // Update cost display
+      upgrade.currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count); // Recalculate the new cost
+      button.innerHTML = `${upgrade.name} - Cost: ${upgrade.currentCost.toFixed(2)}`; // Update cost display
       updateStatus(); // Update status display
       button.disabled = true; // Immediately disable until further checks
     }
@@ -90,7 +89,7 @@ function updateStatus() {
   growthRateDisplay.innerHTML = `Current Growth Rate: ${growthRate.toFixed(1)} grafts/sec`;
   purchasesDisplay.innerHTML =
     "Purchased Items: " +
-    upgrades.map((upgrade) => `${upgrade.name}: ${upgrade.count}`).join(", ");
+    upgrades.map(upgrade => `${upgrade.name}: ${upgrade.count}`).join(", ");
 }
 
 // Time management variables
@@ -105,9 +104,8 @@ function updateCounter(timestamp: number) {
 
     // Enable buttons where sufficient units exist
     upgrades.forEach((upgrade) => {
-      const currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count);
       if (upgrade.button) {
-        upgrade.button.disabled = counter < currentCost;
+        upgrade.button.disabled = counter < upgrade.currentCost;
       }
     });
   }
