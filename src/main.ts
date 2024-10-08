@@ -33,9 +33,30 @@ app.append(manualButton);
 
 // Upgrade definitions
 const upgrades = [
-  { id: "a", name: "Item A", baseCost: 10, rateIncrease: 0.1, button: null as HTMLButtonElement | null, count: 0 },
-  { id: "b", name: "Item B", baseCost: 100, rateIncrease: 2.0, button: null as HTMLButtonElement | null, count: 0 },
-  { id: "c", name: "Item C", baseCost: 1000, rateIncrease: 50, button: null as HTMLButtonElement | null, count: 0 },
+  {
+    id: "a",
+    name: "Item A",
+    baseCost: 10,
+    rateIncrease: 0.1,
+    button: null as HTMLButtonElement | null,
+    count: 0,
+  },
+  {
+    id: "b",
+    name: "Item B",
+    baseCost: 100,
+    rateIncrease: 2.0,
+    button: null as HTMLButtonElement | null,
+    count: 0,
+  },
+  {
+    id: "c",
+    name: "Item C",
+    baseCost: 1000,
+    rateIncrease: 50,
+    button: null as HTMLButtonElement | null,
+    count: 0,
+  },
 ];
 
 // Create a purchase button for each upgrade
@@ -66,7 +87,9 @@ upgrades.forEach((upgrade) => {
 // Update status display
 function updateStatus() {
   growthRateDisplay.innerHTML = `Current Growth Rate: ${growthRate.toFixed(1)} grafts/sec`;
-  purchasesDisplay.innerHTML = 'Purchased Items: ' + upgrades.map(upgrade => `${upgrade.name}: ${upgrade.count}`).join(', ');
+  purchasesDisplay.innerHTML =
+    "Purchased Items: " +
+    upgrades.map((upgrade) => `${upgrade.name}: ${upgrade.count}`).join(", ");
 }
 
 // Time management variables
