@@ -1,10 +1,10 @@
 import "./style.css";
 
 interface Item {
-  name: string,
-  cost: number,
-  rate: number
-};
+  name: string;
+  cost: number;
+  rate: number;
+}
 
 const availableItems: Item[] = [
   { name: "Improved Irrigation", cost: 10, rate: 0.1 },
@@ -52,9 +52,9 @@ type Upgrade = Item & {
 };
 
 // Upgrade logic using availableItems and restructuring it to include dynamic properties
-const upgrades: Upgrade[] = availableItems.map(item => ({
+const upgrades: Upgrade[] = availableItems.map((item) => ({
   ...item,
-  baseCost: item.cost,  // Maintain a separate baseCost reference
+  baseCost: item.cost, // Maintain a separate baseCost reference
   currentCost: item.cost,
   button: null,
   count: 0,
@@ -89,7 +89,7 @@ function updateStatus() {
   growthRateDisplay.innerHTML = `Current Growth Rate: ${growthRate.toFixed(1)} grafts/sec`;
   purchasesDisplay.innerHTML =
     "Purchased Items: " +
-    upgrades.map(upgrade => `${upgrade.name}: ${upgrade.count}`).join(", ");
+    upgrades.map((upgrade) => `${upgrade.name}: ${upgrade.count}`).join(", ");
 }
 
 // Time management variables
