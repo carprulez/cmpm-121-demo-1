@@ -24,6 +24,7 @@ let growthRate: number = 0;
 
 // Basic button for manual count increment
 const manualButton = document.createElement("button");
+manualButton.classList.add("giant-tree-button");
 manualButton.innerHTML = "🌳";
 manualButton.addEventListener("click", () => {
   counter++;
@@ -35,7 +36,7 @@ app.append(manualButton);
 const upgrades = [
   {
     id: "a",
-    name: "Item A",
+    name: "Improved Irrigation",
     baseCost: 10,
     rateIncrease: 0.1,
     button: null as HTMLButtonElement | null,
@@ -43,7 +44,7 @@ const upgrades = [
   },
   {
     id: "b",
-    name: "Item B",
+    name: "Soil",
     baseCost: 100,
     rateIncrease: 2.0,
     button: null as HTMLButtonElement | null,
@@ -51,7 +52,7 @@ const upgrades = [
   },
   {
     id: "c",
-    name: "Item C",
+    name: "Organic Fertilizer",
     baseCost: 1000,
     rateIncrease: 50,
     button: null as HTMLButtonElement | null,
