@@ -76,11 +76,11 @@ button:focus-visible {
 }
 
 .giant-tree-button {
-  font-size: 5rem;  /* Make the emoji large */
-  padding: 0.5rem;  /* Adjust padding if needed */
+  font-size: 5rem; /* Make the emoji large */
+  padding: 0.5rem; /* Adjust padding if needed */
   background: none; /* Remove background to focus on emoji */
-  border: none;     /* Remove border for a cleaner look */
+  border: none; /* Remove border for a cleaner look */
   cursor: pointer;
   display: inline-block;
-  margin: 20px 0;   /* Optional: Add spacing around the button */
+  margin: 20px 0; /* Optional: Add spacing around the button */
 }
