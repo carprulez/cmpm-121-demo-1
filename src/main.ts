@@ -33,43 +33,25 @@ app.append(manualButton);
 
 // Upgrade definitions
 const upgrades = [
-  {
-    id: "a",
-    name: "Item A",
-    cost: 10,
-    rateIncrease: 0.1,
-    button: null as HTMLButtonElement | null,
-    count: 0,
-  },
-  {
-    id: "b",
-    name: "Item B",
-    cost: 100,
-    rateIncrease: 2.0,
-    button: null as HTMLButtonElement | null,
-    count: 0,
-  },
-  {
-    id: "c",
-    name: "Item C",
-    cost: 1000,
-    rateIncrease: 50,
-    button: null as HTMLButtonElement | null,
-    count: 0,
-  },
+  { id: "a", name: "Item A", baseCost: 10, rateIncrease: 0.1, button: null as HTMLButtonElement | null, count: 0 },
+  { id: "b", name: "Item B", baseCost: 100, rateIncrease: 2.0, button: null as HTMLButtonElement | null, count: 0 },
+  { id: "c", name: "Item C", baseCost: 1000, rateIncrease: 50, button: null as HTMLButtonElement | null, count: 0 },
 ];
 
 // Create a purchase button for each upgrade
 upgrades.forEach((upgrade) => {
   const button = document.createElement("button");
-  button.innerHTML = `${upgrade.name} - Cost: ${upgrade.cost}`;
+  button.innerHTML = `${upgrade.name} - Cost: ${upgrade.baseCost.toFixed(2)}`;
   button.disabled = true;
 
   button.addEventListener("click", () => {
-    if (counter >= upgrade.cost) {
-      counter -= upgrade.cost;
+    const currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count);
+
+    if (counter >= currentCost) {
+      counter -= currentCost;
       growthRate += upgrade.rateIncrease;
       upgrade.count += 1; // Increment the count of purchased items
+      button.innerHTML = `${upgrade.name} - Cost: ${(upgrade.baseCost * Math.pow(1.15, upgrade.count)).toFixed(2)}`; // Update cost display
       updateStatus(); // Update status display
       button.disabled = true; // Immediately disable until further checks
     }
@@ -77,16 +59,14 @@ upgrades.forEach((upgrade) => {
 
   app.append(button);
 
-  // Save button reference and ensure TypeScript knows about it
+  // Save button reference
   upgrade.button = button;
 });
 
 // Update status display
 function updateStatus() {
   growthRateDisplay.innerHTML = `Current Growth Rate: ${growthRate.toFixed(1)} grafts/sec`;
-  purchasesDisplay.innerHTML =
-    "Purchased Items: " +
-    upgrades.map((upgrade) => `${upgrade.name}: ${upgrade.count}`).join(", ");
+  purchasesDisplay.innerHTML = 'Purchased Items: ' + upgrades.map(upgrade => `${upgrade.name}: ${upgrade.count}`).join(', ');
 }
 
 // Time management variables
@@ -101,8 +81,9 @@ function updateCounter(timestamp: number) {
 
     // Enable buttons where sufficient units exist
     upgrades.forEach((upgrade) => {
+      const currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count);
       if (upgrade.button) {
-        upgrade.button.disabled = counter < upgrade.cost;
+        upgrade.button.disabled = counter < currentCost;
       }
     });
   }
