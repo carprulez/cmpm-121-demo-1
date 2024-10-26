@@ -100,7 +100,7 @@ const upgrades: Upgrade[] = availableItems.map((item) => ({
 upgrades.forEach((upgrade) => {
   const button = document.createElement("button");
   upgrade.button = button;
-  
+
   // Set initial display properties
   updateButtonDisplay(upgrade);
 
@@ -110,7 +110,7 @@ upgrades.forEach((upgrade) => {
       growthRate += upgrade.rate;
       upgrade.count += 1;
       upgrade.currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count);
-      
+
       updateButtonDisplay(upgrade); // Update button display after purchase
       updateStatus(); // Update status to reflect changes
     }
