@@ -100,7 +100,7 @@ const upgrades: Upgrade[] = availableItems.map((item) => ({
 upgrades.forEach((upgrade) => {
   const button = document.createElement("button");
   upgrade.button = button;
-
+  
   // Set initial display properties
   updateButtonDisplay(upgrade);
 
@@ -110,7 +110,7 @@ upgrades.forEach((upgrade) => {
       growthRate += upgrade.rate;
       upgrade.count += 1;
       upgrade.currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count);
-
+      
       updateButtonDisplay(upgrade); // Update button display after purchase
       updateStatus(); // Update status to reflect changes
     }
@@ -127,23 +127,35 @@ function updateStatus() {
     upgrades.map((upgrade) => `${upgrade.name}: ${upgrade.count}`).join(", ");
 }
 
-let lastTimestamp: number = 0;
-
-function updateCounter(timestamp: number) {
-  if (lastTimestamp !== 0) {
-    const delta = timestamp - lastTimestamp;
-    const incrementAmount = (delta / 1000) * growthRate;
-    counter += incrementAmount;
-    counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
-
-    upgrades.forEach((upgrade) => {
-      updateButtonDisplay(upgrade); // Now handled by shared function
-    });
-  }
-  lastTimestamp = timestamp;
-  requestAnimationFrame(updateCounter);
+// Calculate the increments based on the elapsed time and growth rate
+function calculateIncrement(deltaTime: number, rate: number): number {
+  return (deltaTime / 1000) * rate;
 }
 
-requestAnimationFrame(updateCounter);
+// Update the counter based on the current timestamp
+function updateCounter(deltaTime: number) {
+  const incrementAmount = calculateIncrement(deltaTime, growthRate);
+  counter += incrementAmount;
+  counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
+}
 
-updateStatus();
+// Refresh UI components to reflect the current state
+function refreshUI() {
+  upgrades.forEach(updateButtonDisplay); // Update each upgrade's button display
+  updateStatus(); // Refresh the growth rate and purchase status
+}
+
+let lastTimestamp: number = 0;
+
+// Request animation frame for the next counter update
+function updateLoop(timestamp: number) {
+  if (lastTimestamp !== 0) {
+    const deltaTime = timestamp - lastTimestamp;
+    updateCounter(deltaTime);
+    refreshUI();
+  }
+  lastTimestamp = timestamp;
+  requestAnimationFrame(updateLoop);
+}
+
+requestAnimationFrame(updateLoop);
