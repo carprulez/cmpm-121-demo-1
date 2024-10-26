@@ -79,6 +79,14 @@ type Upgrade = Item & {
   count: number;
 };
 
+// Function to update button display for an Upgrade
+function updateButtonDisplay(upgrade: Upgrade) {
+  if (upgrade.button) {
+    upgrade.button.innerHTML = `${upgrade.name} - Cost: ${upgrade.currentCost.toFixed(2)}<br>${upgrade.description}`;
+    upgrade.button.disabled = counter < upgrade.currentCost;
+  }
+}
+
 // Initialize upgrades using availableItems
 const upgrades: Upgrade[] = availableItems.map((item) => ({
   ...item,
@@ -91,8 +99,10 @@ const upgrades: Upgrade[] = availableItems.map((item) => ({
 // Create a purchase button for each upgrade
 upgrades.forEach((upgrade) => {
   const button = document.createElement("button");
-  button.innerHTML = `${upgrade.name} - Cost: ${upgrade.currentCost.toFixed(2)}<br>${upgrade.description}`;
-  button.disabled = true;
+  upgrade.button = button;
+  
+  // Set initial display properties
+  updateButtonDisplay(upgrade);
 
   button.addEventListener("click", () => {
     if (counter >= upgrade.currentCost) {
@@ -100,16 +110,13 @@ upgrades.forEach((upgrade) => {
       growthRate += upgrade.rate;
       upgrade.count += 1;
       upgrade.currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count);
-      button.innerHTML = `${upgrade.name} - Cost: ${upgrade.currentCost.toFixed(2)}<br>${upgrade.description}`;
-      updateStatus();
-      button.disabled = true;
+      
+      updateButtonDisplay(upgrade); // Update button display after purchase
+      updateStatus(); // Update status to reflect changes
     }
   });
 
   app.append(button);
-
-  // Save button reference
-  upgrade.button = button;
 });
 
 // Update status display
@@ -130,9 +137,7 @@ function updateCounter(timestamp: number) {
     counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
 
     upgrades.forEach((upgrade) => {
-      if (upgrade.button) {
-        upgrade.button.disabled = counter < upgrade.currentCost;
-      }
+      updateButtonDisplay(upgrade); // Now handled by shared function
     });
   }
   lastTimestamp = timestamp;
