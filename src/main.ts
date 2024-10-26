@@ -7,6 +7,19 @@ interface Item {
   description: string;
 }
 
+interface Upgrade extends Item {
+  baseCost: number;
+  currentCost: number;
+  button: HTMLButtonElement | null;
+  count: number;
+}
+
+interface GameState {
+  counter: number;
+  growthRate: number;
+  upgrades: Upgrade[];
+}
+
 const availableItems: Item[] = [
   {
     name: "Improved Irrigation",
@@ -59,100 +72,84 @@ statusDiv.appendChild(growthRateDisplay);
 statusDiv.appendChild(purchasesDisplay);
 app.append(statusDiv);
 
-let counter: number = 0;
-let growthRate: number = 0;
-
-// Basic button for manual count increment
 const manualButton = document.createElement("button");
 manualButton.classList.add("giant-tree-button");
 manualButton.innerHTML = "🌳";
 manualButton.addEventListener("click", () => {
-  counter++;
-  counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
+  gameState.counter++;
+  counterDiv.innerHTML = `Grafts made: ${Math.floor(gameState.counter)}`;
 });
 app.append(manualButton);
 
-type Upgrade = Item & {
-  baseCost: number;
-  currentCost: number;
-  button: HTMLButtonElement | null;
-  count: number;
+const gameState: GameState = {
+  counter: 0,
+  growthRate: 0,
+  upgrades: availableItems.map((item) => ({
+    ...item,
+    baseCost: item.cost,
+    currentCost: item.cost,
+    button: null,
+    count: 0,
+  })),
 };
 
-// Function to update button display for an Upgrade
 function updateButtonDisplay(upgrade: Upgrade) {
   if (upgrade.button) {
     upgrade.button.innerHTML = `${upgrade.name} - Cost: ${upgrade.currentCost.toFixed(2)}<br>${upgrade.description}`;
-    upgrade.button.disabled = counter < upgrade.currentCost;
+    upgrade.button.disabled = gameState.counter < upgrade.currentCost;
   }
 }
 
-// Initialize upgrades using availableItems
-const upgrades: Upgrade[] = availableItems.map((item) => ({
-  ...item,
-  baseCost: item.cost,
-  currentCost: item.cost,
-  button: null,
-  count: 0,
-}));
-
-// Create a purchase button for each upgrade
-upgrades.forEach((upgrade) => {
+gameState.upgrades.forEach((upgrade) => {
   const button = document.createElement("button");
   upgrade.button = button;
-
-  // Set initial display properties
+  
   updateButtonDisplay(upgrade);
 
   button.addEventListener("click", () => {
-    if (counter >= upgrade.currentCost) {
-      counter -= upgrade.currentCost;
-      growthRate += upgrade.rate;
+    if (gameState.counter >= upgrade.currentCost) {
+      gameState.counter -= upgrade.currentCost;
+      gameState.growthRate += upgrade.rate;
       upgrade.count += 1;
       upgrade.currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count);
-
-      updateButtonDisplay(upgrade); // Update button display after purchase
-      updateStatus(); // Update status to reflect changes
+      
+      updateButtonDisplay(upgrade);
+      updateStatus(gameState);
     }
   });
 
   app.append(button);
 });
 
-// Update status display
-function updateStatus() {
-  growthRateDisplay.innerHTML = `Current Growth Rate: ${growthRate.toFixed(1)} grafts/sec`;
+function updateStatus(state: GameState) {
+  growthRateDisplay.innerHTML = `Current Growth Rate: ${state.growthRate.toFixed(1)} grafts/sec`;
   purchasesDisplay.innerHTML =
     "Purchased Items: " +
-    upgrades.map((upgrade) => `${upgrade.name}: ${upgrade.count}`).join(", ");
+    state.upgrades.map((upgrade) => `${upgrade.name}: ${upgrade.count}`).join(", ");
 }
 
-// Calculate the increments based on the elapsed time and growth rate
 function calculateIncrement(deltaTime: number, rate: number): number {
   return (deltaTime / 1000) * rate;
 }
 
-// Update the counter based on the current timestamp
-function updateCounter(deltaTime: number) {
-  const incrementAmount = calculateIncrement(deltaTime, growthRate);
-  counter += incrementAmount;
-  counterDiv.innerHTML = `Grafts made: ${Math.floor(counter)}`;
+function updateCounter(deltaTime: number, state: GameState) {
+  const incrementAmount = calculateIncrement(deltaTime, state.growthRate);
+  state.counter += incrementAmount;
+  counterDiv.innerHTML = `Grafts made: ${Math.floor(state.counter)}`;
 }
 
-// Refresh UI components to reflect the current state
-function refreshUI() {
-  upgrades.forEach(updateButtonDisplay); // Update each upgrade's button display
-  updateStatus(); // Refresh the growth rate and purchase status
+function refreshUI(state: GameState) {
+  state.upgrades.forEach(updateButtonDisplay);
+  updateStatus(state);
 }
 
 let lastTimestamp: number = 0;
 
-// Request animation frame for the next counter update
 function updateLoop(timestamp: number) {
   if (lastTimestamp !== 0) {
     const deltaTime = timestamp - lastTimestamp;
-    updateCounter(deltaTime);
-    refreshUI();
+    updateCounter(deltaTime, gameState);
+    refreshUI(gameState);
   }
   lastTimestamp = timestamp;
   requestAnimationFrame(updateLoop);
