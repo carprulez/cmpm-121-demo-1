@@ -58,6 +58,8 @@ const app: HTMLDivElement = document.querySelector("#app")!;
 
 const gameName = "Leaf Lovers";
 document.title = gameName;
+document.body.style.background = "#5a342c"; // https://github.com/tblagarrett/cmpm-121-demo-1/blob/main/src/main.ts I took inspiration from Garrett's project by changing the background color of my webpage.
+
 
 const header = document.createElement("h1");
 header.innerHTML = gameName;
@@ -103,7 +105,7 @@ function updateButtonDisplay(upgrade: Upgrade) {
 gameState.upgrades.forEach((upgrade) => {
   const button = document.createElement("button");
   upgrade.button = button;
-  
+
   updateButtonDisplay(upgrade);
 
   button.addEventListener("click", () => {
@@ -112,7 +114,7 @@ gameState.upgrades.forEach((upgrade) => {
       gameState.growthRate += upgrade.rate;
       upgrade.count += 1;
       upgrade.currentCost = upgrade.baseCost * Math.pow(1.15, upgrade.count);
-      
+
       updateButtonDisplay(upgrade);
       updateStatus(gameState);
     }
@@ -125,7 +127,9 @@ function updateStatus(state: GameState) {
   growthRateDisplay.innerHTML = `Current Growth Rate: ${state.growthRate.toFixed(1)} grafts/sec`;
   purchasesDisplay.innerHTML =
     "Purchased Items: " +
-    state.upgrades.map((upgrade) => `${upgrade.name}: ${upgrade.count}`).join(", ");
+    state.upgrades
+      .map((upgrade) => `${upgrade.name}: ${upgrade.count}`)
+      .join(", ");
 }
 
 function calculateIncrement(deltaTime: number, rate: number): number {

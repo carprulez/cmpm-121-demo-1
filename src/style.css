@@ -76,7 +76,7 @@ button:focus-visible {
 }
 
 .giant-tree-button {
-  font-size: 5rem; /* Make the emoji large */
+  font-size: 10rem; /* https://github.com/as0mdude/cmpm-121-demo-1 I was inspired for my second change by this project because I noticed their button was huge and very clearly the clickable aspect. */
   padding: 0.5rem; /* Adjust padding if needed */
   background: none; /* Remove background to focus on emoji */
   border: none; /* Remove border for a cleaner look */
